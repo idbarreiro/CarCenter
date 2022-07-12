@@ -17,7 +17,7 @@ namespace Persistence
 
             //Permite generar repositorio generico sin importar la clase, haciendo una inyeccion de dependencias (a implementa b)
             #region Repositories
-            services.AddTransient(typeof(IRepositoryAsync<>, typeof(MyRepositoryAsync<>)));
+            services.AddTransient(typeof(IRepositoryAsync<>), typeof(MyRepositoryAsync<>));
             #endregion
         }
     }

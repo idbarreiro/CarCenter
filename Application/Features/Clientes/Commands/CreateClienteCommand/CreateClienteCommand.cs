@@ -1,4 +1,7 @@
-﻿using Application.Wrappers;
+﻿using Application.Interfaces;
+using Application.Wrappers;
+using AutoMapper;
+using Domain.Entities;
 using MediatR;
 using System;
 using System.Threading;
@@ -6,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Application.Features.Clientes.Commands.CreateClienteCommand
 {
-    public class CreateClienteCommand : IRequest<Response<string>>
+    public class CreateClienteCommand : IRequest<Response<int>>
     {
         public string Documento { get; set; }
         public string TipoDocumento { get; set; }
@@ -20,11 +23,22 @@ namespace Application.Features.Clientes.Commands.CreateClienteCommand
         public float Presupuesto { get; set; }
     }
 
-    public class CreateClienteCommandHandler : IRequestHandler<CreateClienteCommand,Response<string>>
+    public class CreateClienteCommandHandler : IRequestHandler<CreateClienteCommand,Response<int>>
     {
-        public async Task<Response<string>> Handle(CreateClienteCommand request, CancellationToken cancellationToken)
+        private readonly IRepositoryAsync<Cliente> _repositoryAsync;
+        private readonly IMapper _mapper;
+
+        public CreateClienteCommandHandler(IRepositoryAsync<Cliente> repositoryAsync, IMapper mapper)
         {
-            throw new NotImplementedException();
+            _repositoryAsync = repositoryAsync;
+            _mapper = mapper;
+        }
+
+        public async Task<Response<int>> Handle(CreateClienteCommand request, CancellationToken cancellationToken)
+        {
+            var nuevoRegistro = _mapper.Map<Cliente>(request);
+            var data = await _repositoryAsync.AddAsync(nuevoRegistro);
+            return new Response<int>(data.Id);
         }
     }
 }
